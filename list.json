@@ -1,0 +1,20 @@
+[
+    {
+        "checked":true,
+        "name":"iphone6",
+        "price":2000,
+        "num":1
+    },
+    {
+        "checked":true,
+        "name":"iphone7",
+        "price":4000,
+        "num":2
+    },
+    {
+        "checked":true,
+        "name":"iphone8",
+        "price":6000,
+        "num":3
+    }
+]

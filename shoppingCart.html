@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.css">
+    <style>
+        th,td{
+            text-align: center;
+        }
+        table{
+            table-layout:fixed ;
+        }
+    </style>
+    <script src="./node_modules/axios/dist/axios.js"></script>
+    <script src="./node_modules/vue/dist/vue.js"></script>
+</head>
+<body>
+    <div class="row" id="app">
+        <div class="container">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox"  v-model="checkAll">全选</th>
+                        <th>商品名</th>
+                        <th>单价</th>
+                        <th>数量</th>
+                        <th>小计</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(val,ind) in list">
+                        <td><input type="checkbox" v-model="val.checked"></td>
+                        <td>{{val.name}}</td>
+                        <td>{{val.price}}</td>
+                        <td> 
+                            <button class="btn btn-primary" @click="cut(ind)">-</button> 
+                            {{val.num}} 
+                            <button class="btn btn-primary" @click="add(ind)">+</button>
+                        </td>
+                        <td>{{priceNum(ind)}}</td>
+                        <td><button class="btn btn-danger" @click="del(ind)">删除</button></td>
+                    </tr>
+                    <tr style="background-color:#ccc">
+                        <td>合计</td>
+                        <td colspan="5">{{priceAll}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        new Vue({
+            el:'#app',
+            data:{
+                list:[]
+            },
+            created () {
+                axios.get('./list.json').then(res=>{
+                    this.list = res.data;
+                })
+            },
+            methods:{
+                priceNum(i){
+                    return this.list[i].price*this.list[i].num;
+                },
+                cut(i){
+                    if(this.list[i].num<=0){
+                        this.list[i].num=0;
+                    }else{
+                        this.list[i].num --;
+                    }
+                },
+                add(i){
+                    this.list[i].num ++;
+                },
+                del(i){
+                    this.list.splice(i,1);
+                }
+            },
+            computed:{
+                priceAll(){
+                    let sum=0;
+                    this.list.filter(x=>x.checked==true).forEach(x=>sum += x.price*x.num);
+                    return sum;
+                },
+                checkAll:{
+                    get(){
+                        if(this.list.every(x=>x.checked==true)){
+                            return true;
+                        }else{
+                            return false;
+                        }
+                    },
+                    set(){
+                        if(this.list.some(x=>x.checked==false)){
+                            this.list.forEach(x=>x.checked=true);
+                        }else{
+                            this.list.forEach(x=>x.checked=false);
+                        }
+                    }
+                }
+            }
+        })
+    </script>
+</body>
+</html>
